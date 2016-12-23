@@ -40,7 +40,10 @@ class Animation
     @step_callbacks.push(callback)
   end
 
-
+  def run_callbacks
+    @step_callbacks.each{|cb| cb.call}
+    @at_callbacks[frame].each {|cb| cb.call }
+  end
 
 end
 
