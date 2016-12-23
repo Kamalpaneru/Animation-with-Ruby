@@ -1,3 +1,4 @@
+require 'erb'
 class Animation
   attr_reader :frame, :width, :height, :objects
 
@@ -44,6 +45,25 @@ class Animation
     @step_callbacks.each{|cb| cb.call}
     @at_callbacks[frame].each {|cb| cb.call }
   end
+
+Template = ERB.new(<<-END)
+<?xml version="1.0"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" ➥
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg width="<%= width %>" height="<%= height %>" xmlns="http://www.w3.org/2000/svg">
+<% objects.each do |obj| %>
+<%= obj.render(frame) %>
+<% end %>
+</svg>
+END
+
+def render(filename)
+  File.open("#{filename}.svg","w") do |file|
+    file.write(Template.result(objbinding))
+end
+system("convert #{filename}.svg #{filename}.jpg")
+#File.unlink("#{filename}.svg")
+end
 
 end
 
